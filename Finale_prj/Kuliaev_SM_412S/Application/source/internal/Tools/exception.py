@@ -1,3 +1,10 @@
+class Aug_data_empty(Exception):
+  def __init__(self, *args, dirpath=None):
+    super().__init__(args)
+
+  def __str__(self):
+    return "Отсутствуют аугментированные изображения!"
+
 class Invalid_dirpath(Exception):
   def __init__(self, *args, dirpath=None):
     super().__init__(args)
@@ -5,40 +12,34 @@ class Invalid_dirpath(Exception):
 
   def __str__(self):
     ret_mess = None
-    if self.__dirpath is not None:
+    if self.__dirpath != None:
       ret_mess = f'Директории "{self.__dirpath}" не существует!'
     else:
       ret_mess = super().__str__()
     return ret_mess
   
-class Invalid_arg_type(Exception):
-  def __init__(self, *args, mess=None):
+class Invalid_args_type(Exception):
+  def __init__(self, *args, param=None):
     super().__init__(args)
-    self.__mess = mess
+    self.__param = param
 
   def __str__(self):
     ret_mess = None
-    if self.__mess is not None:
-      ret_mess = f'Переменная "{self.__dirpath}" не число!'
+    if self.__param != None:
+      ret_mess = f'Некорректный тип параметра "{self.__param}"!'
     else:
       ret_mess = super().__str__()
     return ret_mess
   
 class Invalid_arg_range(Exception):
-  def __init__(self, *args, mess=None):
+  def __init__(self, *args, param=None):
     super().__init__(args)
-    self.__mess = mess
+    self.__param = param
 
   def __str__(self):
     ret_mess = None
-    if self.__mess is not None:
-      ret_mess = f'Переменная "{self.__dirpath}" имеет не корректный диапазон!'
+    if self.__param != None:
+      ret_mess = f'Некорректный диапазон параметра "{self.__param}"!'
     else:
       ret_mess = super().__str__()
     return ret_mess
-  
-if __name__ == "__main__":
-  try:
-    raise Invalid_dirpath("error")
-  except Invalid_dirpath as exc:
-    print(exc)
