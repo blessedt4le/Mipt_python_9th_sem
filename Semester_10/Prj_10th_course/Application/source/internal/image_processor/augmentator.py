@@ -4,6 +4,7 @@ import os
 import random
 import shutil
 
+from internal.tools.save2tmp import Save2tmp
 from internal.tools.tmp_if import Tmp_if
 
 
@@ -66,7 +67,7 @@ class Augmentator:
   @staticmethod
   def augmentate(imgs, params):
     os.chdir(Tmp_if().tmp[:Tmp_if().tmp.rfind('/')])
-    shutil.rmtree(Tmp_if().tmp)
+    Tmp_if().clear()
     for key, elem in imgs.items():
       idx = 0
       lable = key[(key.rfind('/') + 1):]
@@ -75,10 +76,9 @@ class Augmentator:
       for img in elem:
         os.chdir(key)
         src_img = cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2GRAY)
-        idx = Augmentator.save_aug2tmp(idx,
-                                       Augmentator.augmentate_img(src_img, 
-                                                                  params),
-                                       tmppath, lable)
+        idx = Save2tmp.save2tmp(idx, Augmentator.augmentate_img(src_img, 
+                                                                params), 
+                                tmppath, lable)
 
   @staticmethod
   def save_aug2tmp(idx, aug_imgs, tmppath, lable):

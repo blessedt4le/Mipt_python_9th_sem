@@ -4,8 +4,8 @@ import shutil
 from internal.tools.singleton import singleton
 
 @singleton
-class Tmp_if:
-  __dir_name = "tmp_aug"
+class Tmp_gen_if:
+  __dir_name = "tmp_gen"
 
   def __init__(self):
     self.__tmp_dir = os.path.dirname(os.path.abspath(__file__)) \
@@ -29,4 +29,4 @@ class Tmp_if:
       shutil.rmtree(self.__tmp_dir)
 
 if __name__ == "__main__":
-  Tmp_if()
+  Tmp_gen_if()

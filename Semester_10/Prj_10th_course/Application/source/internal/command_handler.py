@@ -4,6 +4,7 @@ import threading
 import tkinter as tk
 
 from internal.image_processor.augmentator import Augmentator
+from internal.image_processor.generator import Image_generator
 from internal.load.download_images import Download_data
 from internal.load.upload_images import Upload_images
 import internal.tools.exception as exception
@@ -19,11 +20,14 @@ class Command_handler:
     self.__aug_data = Imgs_container()
     self.__tmp_if = Tmp_if()
     self.__dirpath = None
+    Image_generator()
+    Image_generator().generate(nof_imgs=10, nof_cells=100)
 
   def download(self, dirpath):
     if not os.path.isdir(dirpath):
       raise exception.Invalid_dirpath(dirpath=dirpath)
     elif self.__dirpath != dirpath:
+      Image_generator().clear()
       self.__dirpath = dirpath
       download = threading.Thread(target=self.__download, args=(dirpath,))
       download.start()
@@ -38,8 +42,52 @@ class Command_handler:
 
     tk.messagebox.showinfo("Информация", "Загрузка завершена!")
 
+  def generate(self, img_size, nof_imgs, nof_cells):
+    err = 0
+    try:
+      img_size = (int(img_size[0]), int(img_size[1]))
+    except ValueError:
+      err = 1
+      raise exception.Invalid_args_type(param="размер изображения")
+    
+    if (err == 0):
+      try:
+        nof_imgs = int(nof_imgs)
+      except ValueError:
+        err = 1
+        raise exception.Invalid_args_type(param="количество изображений")
+      
+    if (err == 0):
+      try:
+        nof_cells = int(nof_cells)
+      except ValueError:
+        err = 1
+        raise exception.Invalid_args_type(param="количество клеток")
+      
+    if err == 0:
+      self.__data.imgs = None
+      generate = threading.Thread(target=self.__generate, args=(img_size, 
+                                                                nof_imgs, 
+                                                                nof_cells,))
+      generate.start()
+
+  def __generate(self, img_size, nof_imgs, nof_cells):
+    Image_generator().generate(img_size, nof_imgs, nof_cells)
+
+    mess = f"Сгенерированы изображения:\n  количество - {nof_imgs}\n" \
+       f"  размер - {img_size[0]}x{img_size[1]}\n  количество клеток на " \
+       f"изображение - от {nof_cells - 10 if (nof_cells - 10) > 0 else 0} " \
+       f"до {nof_cells}"
+    self.__update_logbox(mess)
+    tk.messagebox.showinfo("Информация", "Генерация завершена!")
+
   def get_images(self):
-    return self.__data.imgs
+    ret_imgs = None
+    if self.__data.imgs != None:
+      ret_imgs = self.__data.imgs
+    elif Image_generator().get_gens() != None:
+      ret_imgs = Image_generator().get_gens()
+    return ret_imgs
   
   def augmentate(self, **kwargs):
     aug_params = dict()

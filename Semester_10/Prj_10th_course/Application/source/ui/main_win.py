@@ -75,11 +75,15 @@ class Main_win(ctk.CTk):
     data = Command_handler().get_images()
     if data != None:
       Gallery_win(self, data)
+    else:
+      tk.messagebox.showerror(title="Ошибка", message="Данные отсутствуют!")
 
   def __show_aug_data(self):
     data = Command_handler().get_augmentation_images()
     if data != None:
       Gallery_win(self, data)
+    else:
+      tk.messagebox.showerror(title="Ошибка", message="Данные отсутствуют!")
 
   def __download_data(self):
     dirpath = tk.filedialog.askdirectory()
