@@ -82,12 +82,10 @@ class Command_handler:
     tk.messagebox.showinfo("Информация", "Генерация завершена!")
 
   def get_images(self):
-    ret_imgs = None
-    if self.__data.imgs != None:
-      ret_imgs = self.__data.imgs
-    elif Image_generator().get_gens() != None:
-      ret_imgs = Image_generator().get_gens()
-    return ret_imgs
+    return self.__data.imgs
+  
+  def get_generated_images(self):
+    return Image_generator().get_gens()
   
   def augmentate(self, **kwargs):
     aug_params = dict()
