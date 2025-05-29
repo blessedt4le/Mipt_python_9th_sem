@@ -22,12 +22,12 @@ class Command_handler:
     self.__dirpath = None
     Image_generator()
     Image_generator().generate(nof_imgs=10, nof_cells=100)
+    
 
   def download(self, dirpath):
     if not os.path.isdir(dirpath):
       raise exception.Invalid_dirpath(dirpath=dirpath)
     elif self.__dirpath != dirpath:
-      Image_generator().clear()
       self.__dirpath = dirpath
       download = threading.Thread(target=self.__download, args=(dirpath,))
       download.start()
@@ -65,7 +65,6 @@ class Command_handler:
         raise exception.Invalid_args_type(param="количество клеток")
       
     if err == 0:
-      self.__data.imgs = None
       generate = threading.Thread(target=self.__generate, args=(img_size, 
                                                                 nof_imgs, 
                                                                 nof_cells,))
@@ -77,7 +76,7 @@ class Command_handler:
     mess = f"Сгенерированы изображения:\n  количество - {nof_imgs}\n" \
        f"  размер - {img_size[0]}x{img_size[1]}\n  количество клеток на " \
        f"изображение - от {nof_cells - 10 if (nof_cells - 10) > 0 else 0} " \
-       f"до {nof_cells}"
+       f"до {nof_cells}\n"
     self.__update_logbox(mess)
     tk.messagebox.showinfo("Информация", "Генерация завершена!")
 

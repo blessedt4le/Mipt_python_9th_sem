@@ -47,7 +47,7 @@ class Image_generator:
     cell_img = cv2.imread(random.choice(self.__patterns[list(self.__patterns.keys())[1]]),
                           cv2.IMREAD_UNCHANGED)
 
-    for idx in range(len(cells_coords)):
+    for idx in range(len(cells_coords["h"])):
       back_img = self.__overlay(img_size, back_img, cell_img, 
                                 {"h": cells_coords["h"][idx], 
                                  "w": cells_coords["w"][idx]})
