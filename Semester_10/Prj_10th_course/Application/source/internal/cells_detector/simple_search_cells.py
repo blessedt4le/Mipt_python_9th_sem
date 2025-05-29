@@ -57,7 +57,7 @@ class SimpleSearchCells:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
         return output
 
-    def get(self, imgs):
+    def detect_cells(self, imgs):
         if not isinstance(imgs, dict):
             raise TypeError(f"Expected dict, got {type(imgs).__name__}")
 
@@ -117,6 +117,6 @@ if __name__ == "__main__":
         debug=True
     )
     inputs = {r"C:\Files\VSC\proj\data": ["test_simple_val.png", "test_val.png"]}
-    results = counter.get(inputs)
+    results = counter.detect_cells(inputs)
     for path, (cnt, vis) in results:
         print(f"{path}: найдено объектов: {cnt}")
