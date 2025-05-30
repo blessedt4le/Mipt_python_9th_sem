@@ -116,7 +116,6 @@ class Command_handler:
     res = [None] * 3
     for method in methods:
       res[method] = self.__algorithms[method].detect_cells(imgs)
-    print(res)
     DB().update(res)
 
   def open_db(self):

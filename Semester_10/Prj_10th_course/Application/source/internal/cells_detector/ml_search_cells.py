@@ -46,7 +46,7 @@ class MlSearchCells:
         return feats
 
     def __sliding_window_features(self, img):
-        h, w = img.shape
+        h, w = img.shape[:2]
         X, positions = [], []
         for i in range(0, h - self.patch_size + 1, self.step):
             for j in range(0, w - self.patch_size + 1, self.step):
@@ -81,6 +81,7 @@ class MlSearchCells:
         return final_mask, count
 
     def detect_cells(self, imgs):
+        print("MlSearchCells start!")
         if not isinstance(imgs, dict):
             raise TypeError(f"Expected dict, got {type(imgs).__name__}")
 
@@ -108,7 +109,7 @@ class MlSearchCells:
                         warnings.warn(f"File not found: {full_path}")
                         continue
 
-                    img = cv2.imread(full_path, cv2.IMREAD_GRAYSCALE)
+                    img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
                     if img is None:
                         warnings.warn(f"Failed to load image: {full_path}")
                         continue
@@ -117,7 +118,7 @@ class MlSearchCells:
                     feats, positions = self.__sliding_window_features(img)
                     scaler = StandardScaler()
                     X_scaled = scaler.fit_transform(feats)
-                    kmeans = KMeans(n_clusters=self.n_clusters, random_state=42).fit(X_scaled)
+                    kmeans = KMeans(n_clusters=self.n_clusters, random_state=42, n_init=10).fit(X_scaled)
                     labels = kmeans.labels_
                     unique, counts = np.unique(labels, return_counts=True)
                     target = unique[np.argmin(counts)]
@@ -138,6 +139,7 @@ class MlSearchCells:
             finally:
                 os.chdir(orig_cwd)
 
+        print("MlSearchCells end!")
         return results
 
 if __name__ == "__main__":

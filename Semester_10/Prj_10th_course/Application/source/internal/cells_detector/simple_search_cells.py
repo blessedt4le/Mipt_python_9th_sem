@@ -61,6 +61,7 @@ class SimpleSearchCells:
         return output
 
     def detect_cells(self, imgs):
+        print("SimpleSearchCells start!")
         if not isinstance(imgs, dict):
             raise TypeError(f"Expected dict, got {type(imgs).__name__}")
 
@@ -98,7 +99,7 @@ class SimpleSearchCells:
                     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                     annotated = self.__annotate(img, contours)
                     count = len(contours)
-                    results.append((full_path, (count, annotated)))
+                    results.append((full_path, count, annotated))
 
                     if self.debug:
                         cv2.imshow("Result", annotated)
@@ -107,6 +108,7 @@ class SimpleSearchCells:
             finally:
                 os.chdir(orig_cwd)
 
+        print("SimpleSearchCells end!")
         return results
 
 
