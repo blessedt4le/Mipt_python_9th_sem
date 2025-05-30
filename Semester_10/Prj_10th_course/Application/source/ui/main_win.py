@@ -50,7 +50,7 @@ class Main_win(ctk.CTk):
         self.__open_BD = ctk.CTkButton(
             master=bottom_frm,
             text="Открыть базу данных",
-            #command=self.__upload_data
+            command=self.__open_db
         )
         self.__open_BD.pack(side="top", fill="x", padx=10, pady=5, expand=False)
 
@@ -60,6 +60,9 @@ class Main_win(ctk.CTk):
             command=self.__upload_data
         )
         self.__copy.pack(side="top", fill="x", padx=10, pady=5, expand=False)
+
+    def __open_db(self):
+        Command_handler().open_db()
 
     # Остальной код остается без изменений
     def __init_download(self, src_frm):
@@ -145,7 +148,7 @@ class Main_win(ctk.CTk):
     def __upload_data(self):
         dirpath = tk.filedialog.askdirectory()
         try:
-            Command_handler().upload(dirpath)
+            Command_handler().copy_db(dirpath)
         except exception.Invalid_dirpath as exc:
             tk.messagebox.showerror(title="Ошибка", message=str(exc))
         except exception.Aug_data_empty as exc:

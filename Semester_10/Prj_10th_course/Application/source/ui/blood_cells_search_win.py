@@ -1,6 +1,8 @@
 import tkinter as tk
 import customtkinter as ctk
 
+from internal.command_handler import Command_handler
+
 class BloodCellsSearchWin(ctk.CTkToplevel):
     def __init__(self, root):
         super().__init__(root)
@@ -82,21 +84,18 @@ class BloodCellsSearchWin(ctk.CTkToplevel):
     
     def __search_cells(self):
         selected_methods = []
-        if self.method1_var.get(): selected_methods.append("Метод 1")
-        if self.method2_var.get(): selected_methods.append("Метод 2")
-        if self.method3_var.get(): selected_methods.append("Метод 3")
+        if self.method1_var.get(): selected_methods.append(0)
+        if self.method2_var.get(): selected_methods.append(1)
+        if self.method3_var.get(): selected_methods.append(2)
         
         if not selected_methods:
             tk.messagebox.showwarning("Предупреждение", "Выберите хотя бы один метод!")
             return
         
-        # Получаем выбранный источник изображений
         image_source = self.image_source_var.get()
-        print(f"Источник: {'Загруженные' if image_source == 'loaded' else 'Сгенерированные'} изображения")
-        print(f"Выбранные методы: {', '.join(selected_methods)}")
-        
-        # Здесь будет логика поиска клеток крови
-        # Можно использовать image_source для определения типа изображений
+
+        Command_handler().detect(0 if image_source == 'loaded' else 1, 
+                                 selected_methods)
         
         tk.messagebox.showinfo("Информация", "Поиск клеток завершен!")
         self.destroy()

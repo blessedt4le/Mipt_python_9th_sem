@@ -1,6 +1,10 @@
 import tkinter as tk
 import customtkinter as ctk
 
+from internal.command_handler import Command_handler
+from ui.gallery_win import Gallery_win
+import tkinter.messagebox as msg
+
 class ImageTypeWin(ctk.CTkToplevel):
     def __init__(self, root):
         super().__init__(root)
@@ -41,10 +45,6 @@ class ImageTypeWin(ctk.CTkToplevel):
         ).pack(pady=10, fill="x")
     
     def show_images(self, img_type):
-        from internal.command_handler import Command_handler
-        from ui.gallery_win import Gallery_win
-        import tkinter.messagebox as msg
-        
         data = None
         handler = Command_handler()
         

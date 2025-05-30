@@ -5,6 +5,9 @@ import platform
 import shutil
 import subprocess
 
+from internal.tools.singleton import singleton
+
+@singleton
 class DB():
   __columns = ["№", "Дата", "Путь к изображению", "Результат алгоритма 1", 
                "Результат алгоритма 2", "Результат алгоритма 3"]
@@ -74,6 +77,7 @@ class DB():
     self.__writer.writerows(new_rows)
 
   def open(self):
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     self.__wcsv.close()
     system = platform.system()
     if system == "Windows":

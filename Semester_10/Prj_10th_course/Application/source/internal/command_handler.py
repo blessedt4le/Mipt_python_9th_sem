@@ -3,13 +3,18 @@ from pathlib import Path
 import threading
 import tkinter as tk
 
-from internal.cells_detecter.CNN import CNN
-from internal.cells_detecter.ml_search_cells import MlSearchCells
-from internal.cells_detecter.simple_search_cells import SimpleSearchCells
+from internal.cells_detector.CNN import CNN
+from internal.cells_detector.ml_search_cells import MlSearchCells
+from internal.cells_detector.simple_search_cells import SimpleSearchCells
+
+from internal.db.db import DB
+
 from internal.image_processor.augmentator import Augmentator
 from internal.image_processor.generator import Image_generator
+
 from internal.load.download_images import Download_data
 from internal.load.upload_images import Upload_images
+
 import internal.tools.exception as exception
 from internal.tools.imgs_container import Imgs_container
 from internal.tools.singleton import singleton
@@ -24,6 +29,7 @@ class Command_handler:
     self.__tmp_if = Tmp_if()
     self.__dirpath = None
     self.__algorithms = [SimpleSearchCells(), MlSearchCells(), CNN()]
+    DB()
   
   def download(self, dirpath):
     if not os.path.isdir(dirpath):
@@ -70,6 +76,16 @@ class Command_handler:
                                                                 nof_cells,))
       generate.start()
 
+  def __generate(self, img_size, nof_imgs, nof_cells):
+    Image_generator().generate(img_size, nof_imgs, nof_cells)
+
+    mess = f"Сгенерированы изображения:\n  количество - {nof_imgs}\n" \
+       f"  размер - {img_size[0]}x{img_size[1]}\n  количество клеток на " \
+       f"изображение - от {nof_cells - 10 if (nof_cells - 10) > 0 else 0} " \
+       f"до {nof_cells}\n\n"
+    self.__update_logbox(mess)
+    tk.messagebox.showinfo("Информация", "Генерация завершена!")
+
   def detect(self, img_type, methods):
     err = 0
     try:
@@ -82,10 +98,11 @@ class Command_handler:
       try:
         methods[idx] = int(methods[idx])
       except ValueError:
+        print(idx)
         err = 1
         raise exception.Invalid_args_type(param="размер изображения")
       
-    if err != 0:
+    if err == 0:
       detect = threading.Thread(target=self.__detect, args=(img_type, methods,))
       detect.start()
 
@@ -99,16 +116,23 @@ class Command_handler:
     res = [None] * 3
     for method in methods:
       res[method] = self.__algorithms[method].detect_cells(imgs)
+    print(res)
+    DB().update(res)
 
-  def __generate(self, img_size, nof_imgs, nof_cells):
-    Image_generator().generate(img_size, nof_imgs, nof_cells)
+  def open_db(self):
+    open_db = threading.Thread(target=self.__open_db)
+    open_db.start()
 
-    mess = f"Сгенерированы изображения:\n  количество - {nof_imgs}\n" \
-       f"  размер - {img_size[0]}x{img_size[1]}\n  количество клеток на " \
-       f"изображение - от {nof_cells - 10 if (nof_cells - 10) > 0 else 0} " \
-       f"до {nof_cells}\n"
-    self.__update_logbox(mess)
-    tk.messagebox.showinfo("Информация", "Генерация завершена!")
+  def __open_db(self):
+    DB().open()
+
+  def copy_db(self, dst_dir):
+    copy_db = threading.Thread(target=self.__copy_db, args=(dst_dir,))
+    copy_db.start()
+
+  def __copy_db(self, dst_dir):
+    print("copy 1")
+    DB().copy(dst_dir)
 
   def get_images(self):
     return self.__data.imgs

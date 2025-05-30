@@ -128,12 +128,13 @@ class Gallery_win(ctk.CTkToplevel):
   def __get_img(self):
     os.chdir(self.__curr_img_dir)
     img = cv2.imread(self.__data[self.__curr_img_dir][self.__curr_img_idx])
+    img = cv2.resize(img, (600, 400))
     self.__def_h, self.__def_w = img.shape[:2]
     self.__curr_h, self.__curr_w = self.__def_h, self.__def_w
     pil_img = Image.fromarray(img)
     self.__curr_img = pil_img
     img = ctk.CTkImage(dark_image=pil_img, size=(self.__curr_w,
-                                                      self.__curr_h))
+                                                 self.__curr_h))
     
     return img
     
