@@ -3,6 +3,9 @@ from pathlib import Path
 import threading
 import tkinter as tk
 
+from internal.cells_detecter.CNN import CNN
+from internal.cells_detecter.ml_search_cells import MlSearchCells
+from internal.cells_detecter.simple_search_cells import SimpleSearchCells
 from internal.image_processor.augmentator import Augmentator
 from internal.image_processor.generator import Image_generator
 from internal.load.download_images import Download_data
@@ -20,10 +23,8 @@ class Command_handler:
     self.__aug_data = Imgs_container()
     self.__tmp_if = Tmp_if()
     self.__dirpath = None
-    Image_generator()
-    Image_generator().generate(nof_imgs=10, nof_cells=100)
-    
-
+    self.__algorithms = [SimpleSearchCells(), MlSearchCells(), CNN()]
+  
   def download(self, dirpath):
     if not os.path.isdir(dirpath):
       raise exception.Invalid_dirpath(dirpath=dirpath)
@@ -32,7 +33,6 @@ class Command_handler:
       download = threading.Thread(target=self.__download, args=(dirpath,))
       download.start()
       
-
   def __download(self, dirpath):
     self.__data.imgs = Download_data.download_images(dirpath)
 
@@ -69,6 +69,36 @@ class Command_handler:
                                                                 nof_imgs, 
                                                                 nof_cells,))
       generate.start()
+
+  def detect(self, img_type, methods):
+    err = 0
+    try:
+      img_type = int(img_type)
+    except ValueError:
+      err = 1
+      raise exception.Invalid_args_type(param="размер изображения")
+    
+    for idx in range(len(methods)):
+      try:
+        methods[idx] = int(methods[idx])
+      except ValueError:
+        err = 1
+        raise exception.Invalid_args_type(param="размер изображения")
+      
+    if err != 0:
+      detect = threading.Thread(target=self.__detect, args=(img_type, methods,))
+      detect.start()
+
+  def __detect(self, img_type, methods):
+    if img_type == 0 and self.__data.imgs != None:
+      self.__use_algorithms(self.__data.imgs, methods)
+    elif img_type == 1 and Image_generator().get_gens() != None:
+      self.__use_algorithms(Image_generator().get_gens(), methods)
+
+  def __use_algorithms(self, imgs, methods):
+    res = [None] * 3
+    for method in methods:
+      res[method] = self.__algorithms[method].detect_cells(imgs)
 
   def __generate(self, img_size, nof_imgs, nof_cells):
     Image_generator().generate(img_size, nof_imgs, nof_cells)

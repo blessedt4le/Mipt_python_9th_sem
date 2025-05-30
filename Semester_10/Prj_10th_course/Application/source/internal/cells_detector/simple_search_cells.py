@@ -3,6 +3,9 @@ import cv2
 import numpy as np
 import warnings
 
+from internal.tools.singleton import singleton
+
+@singleton
 class SimpleSearchCells:
     def __init__(self,
                  blur_ksize=(5, 5),

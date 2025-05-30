@@ -1,9 +1,11 @@
 import cv2
+from natsort import natsorted
 import os
 from ultralytics import YOLO
 
-from natsort import natsorted
+from internal.tools.singleton import singleton
 
+@singleton
 class CNN:
   def __init__(self):
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
