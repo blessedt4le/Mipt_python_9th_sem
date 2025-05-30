@@ -177,3 +177,5 @@ class Gallery_win(ctk.CTkToplevel):
     img = ctk.CTkImage(dark_image=self.__curr_img, size=(self.__def_w, 
                                                          self.__def_h))
     self.__img_fld.configure(image=img)
+
+
